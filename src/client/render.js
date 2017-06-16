@@ -7,7 +7,7 @@ const h1 = children => `<h1>${children}</h1>`;
 
 const card = (owner, card) => `${owner}: </th>${card}`;
 
-const text = text => `<p>${text}</p>`;
+const text = (text, style) => `<div ${style}>${text}</div>`;
 
 const infoTable = (counter, playerHW, deck1, deck2) => `
   <table class='table table-striped table-bordered table-inverse'><td> Round/wins:
@@ -37,6 +37,15 @@ export default (
     ${counter == 0
       ? h1("Start New Top Trumps Game")
       : playerWon ? h1("Player Won!") : h1("Player Lost!")}
+      ${text("When choosing a value,")}
+      ${text(
+        "red means that bigger is better",
+        "style='color:red; font-weight: bold;'"
+      )}
+      ${text(
+        " and blue means that smaller is better.<br><br>",
+        "style='color:blue;'"
+      )}
     ${button("app.startGame()", "Start New Game", "primary")}
   `;
   } else {
