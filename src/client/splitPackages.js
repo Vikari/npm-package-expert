@@ -1,3 +1,4 @@
+// Splits given array to two even long arrays
 export default packages => {
   let deck1;
   let deck2;

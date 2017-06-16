@@ -1,3 +1,4 @@
+// "Cardifys" given array element
 export default (disabled, selected, { name, version, ...card }) => {
   let i = -1;
   const styles = [
@@ -19,5 +20,5 @@ export default (disabled, selected, { name, version, ...card }) => {
           : ""}>${prop}: ${value}</option>`;
       })
       .join("")}
-`;
+  `;
 };
