@@ -13,43 +13,46 @@ const dom = new JSDOM(
 chai.should();
 
 describe("App", () => {
-  describe("#New Game", () => {
+  describe("new game functionality", () => {
     afterEach(() => {});
 
-    describe("Value of start", () => {
+    describe("value of start", () => {
       var app;
 
       beforeEach(() => {
         app = new App(dom.window.document.getElementById("root"));
       });
 
-      it("is false", () => {
+      it("should be false", () => {
         app.start.should.equal(false);
       });
 
-      it("can be changed", () => {
+      it("should be possible to change", () => {
         app.setStart(true);
         app.start.should.equal(true);
         app.setStart(false);
         app.start.should.equal(false);
       });
 
-      it("only accepts booleans", () => {
+      it("should only accept booleans", () => {
         expect(() => {
           app.setStart("foo");
         }).to.throw(Error, '"start" must be a boolean.');
       });
     });
 
-    describe("Start Game", () => {
+    describe("#startGame()", () => {
       var app = new App(dom.window.document.getElementById("root"));
 
-      it("#startGame()", function(done) {
+      it("should end", function(done) {
         app.startGame(done);
       });
 
-      it("startGame has set values", () => {
+      it("should have set values", () => {
         app.getDeck(1).should.be.a("array");
+        app.getDeck(2).should.be.a("array");
+        app.getDeck(1).length.should.equal(6);
+        app.getDeck(2).length.should.equal(6);
         app.counter.should.equal(0);
         app.playerHW.should.equal(0);
         app.getStart().should.equal(true);

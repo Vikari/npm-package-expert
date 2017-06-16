@@ -1,6 +1,6 @@
 // Handles comparing "cards" from two decks for player and "AI"
 // "AI" just selects randomly one value
-export default (deck1, deck2, isAI) => {
+export default (deck1, deck2, isAI, element) => {
   if (isAI) {
     let a, b;
     do {
@@ -12,7 +12,7 @@ export default (deck1, deck2, isAI) => {
       : deck1[0][b] < deck2[0][b];
     return [false, false, playerRight, false, a.value];
   } else {
-    const a = document.getElementById("quessList");
+    const a = element;
     const b = a.options[a.selectedIndex].text.split(":", 1);
     const selected = a.options[a.selectedIndex].value;
     if (deck1[0][b] === deck2[0][b]) {

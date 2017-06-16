@@ -61,7 +61,8 @@ class App {
 
   // Draws whole root on every update
   update(playerWon, sameValue, playerRight, playersTurn, selected) {
-    //document.getElementById("error").innerHTML = "";
+    if (document.getElementById("error"))
+      document.getElementById("error").innerHTML = "";
     this.root.innerHTML = render(
       playerWon,
       sameValue,
@@ -98,7 +99,8 @@ class App {
       const [playerWon, sameValue, playerRight, playersTurn, selected] = quess(
         this.getDeck(1),
         this.getDeck(2),
-        false
+        false,
+        document.getElementById("quessList")
       );
       this.setCounter(this.getCounter() + 1);
       if (playerRight) this.setPlayerHW(this.getPlayerHW() + 1);
@@ -115,7 +117,8 @@ class App {
     const [playerWon, sameValue, playerRight, playersTurn, selected] = quess(
       this.getDeck(1),
       this.getDeck(2),
-      true
+      true,
+      document.getElementById("quessList")
     );
     this.setCounter(this.getCounter() + 1);
     if (playerRight) this.setPlayerHW(this.getPlayerHW() + 1);
