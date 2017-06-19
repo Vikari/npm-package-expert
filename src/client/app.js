@@ -13,7 +13,7 @@ class App {
     this.deck1;
     this.deck2;
     this.counter = 0;
-    this.playerHW = 0;
+    this.wins = 0;
     this.start = false;
     this.update();
   }
@@ -29,15 +29,15 @@ class App {
     this.counter = value;
   }
 
-  getPlayerHW() {
-    return this.playerHW;
+  getWins() {
+    return this.wins;
   }
 
-  setPlayerHW(value) {
+  setWins(value) {
     if (typeof value !== "number") {
-      throw new Error('"playerHW" must be a number.');
+      throw new Error('"wins" must be a number.');
     }
-    this.playerHW = value;
+    this.wins = value;
   }
 
   getStart() {
@@ -60,18 +60,18 @@ class App {
   }
 
   // Draws whole root on every update
-  update(playerWon, sameValue, playerRight, playersTurn, selected) {
+  update(won, same, right, turn, selected) {
     if (document.getElementById("error"))
       document.getElementById("error").innerHTML = "";
     this.root.innerHTML = render(
-      playerWon,
-      sameValue,
-      playerRight,
-      playersTurn,
+      won,
+      same,
+      right,
+      turn,
       selected,
       this.getStart(),
       this.getCounter(),
-      this.getPlayerHW(),
+      this.getWins(),
       this.getDeck(1),
       this.getDeck(2)
     );
@@ -87,7 +87,7 @@ class App {
         this.setDeck(decks[0], 1);
         this.setDeck(decks[1], 2);
         this.setCounter(0);
-        this.setPlayerHW(0);
+        this.setWins(0);
         this.setStart(true);
         this.update(false, undefined, false, true);
       });
@@ -96,14 +96,14 @@ class App {
   // Handles players quess and tells update what to do next
   quess() {
     try {
-      const [playerWon, sameValue, playerRight, playersTurn, selected] = quess(
+      const [won, same, right, turn, selected] = quess(
         this.getDeck(1),
         this.getDeck(2),
         false
       );
       this.setCounter(this.getCounter() + 1);
-      if (playerRight) this.setPlayerHW(this.getPlayerHW() + 1);
-      this.update(playerWon, sameValue, playerRight, playersTurn, selected);
+      if (right) this.setWins(this.getWins() + 1);
+      this.update(won, same, right, turn, selected);
     } catch (err) {
       console.log(err);
       document.getElementById("error").innerHTML =
@@ -113,27 +113,27 @@ class App {
 
   // Handles computers quess and tells update what to do next
   quessAI() {
-    const [playerWon, sameValue, playerRight, playersTurn, selected] = quess(
+    const [won, same, right, turn, selected] = quess(
       this.getDeck(1),
       this.getDeck(2),
       true
     );
     this.setCounter(this.getCounter() + 1);
-    if (playerRight) this.setPlayerHW(this.getPlayerHW() + 1);
-    this.update(playerWon, sameValue, playerRight, playersTurn, selected);
+    if (right) this.setWins(this.getWins() + 1);
+    this.update(won, same, right, turn, selected);
   }
 
   // Shifts cards to the bottom of the winners deck
-  shiftCards(playerRight) {
-    const decks = shiftCards(this.getDeck(1), this.getDeck(2), playerRight);
+  shiftCards(right) {
+    const decks = shiftCards(this.getDeck(1), this.getDeck(2), right);
     this.setDeck(decks[0], 1);
     this.setDeck(decks[1], 2);
     if (this.getDeck(1).length < 1 || this.getDeck(2).length < 1) {
       this.gameEnded();
-    } else if (!playerRight) {
-      this.update(false, undefined, playerRight, false);
+    } else if (!right) {
+      this.update(false, undefined, right, false);
     } else {
-      this.update(false, undefined, playerRight, true);
+      this.update(false, undefined, right, true);
     }
   }
 

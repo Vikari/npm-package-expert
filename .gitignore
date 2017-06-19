@@ -2,3 +2,8 @@
 /lib/
 /.tmp/mocha-webpack/
 /test.js
+/mochatest.html
+/chai.js
+/coverage.html
+/npm-debug.log
+/coverage/

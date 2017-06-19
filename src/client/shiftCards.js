@@ -1,9 +1,9 @@
 // Shifts cards to the bottom of winners deck
-export default (deck1, deck2, playerRight) => {
+export default (deck1, deck2, right) => {
   if (deck1 && deck2 && (deck1.length > 0 && deck2.length > 0)) {
     deck1 = [...deck1];
     deck2 = [...deck2];
-    if (playerRight) {
+    if (right) {
       deck1.push(deck1.shift());
       deck1.push(deck2.shift());
     } else {
