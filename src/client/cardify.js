@@ -20,5 +20,6 @@ export default (disabled, selected, { name, version, ...card }) => {
           : ""}>${prop}: ${value}</option>`;
       })
       .join("")}
+    </select>
   `;
 };

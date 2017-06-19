@@ -1,3 +1,4 @@
+import "babel-polyfill";
 var chai = typeof require === "undefined" ? chai : require("chai");
 //var App = typeof require === "undefined" ? "" : require("../src/client/app");
 var packages = require("../api/top-packages");
@@ -91,88 +92,110 @@ describe("Services", () => {
   });
 
   describe("#quess()", () => {
+    const deck1 = [
+      {
+        name: "lodash",
+        version: "4.17.4",
+        releases: 100,
+        dependencies: 0,
+        dependents: 46210,
+        downloadsLastMonth: 44562576,
+        openIssues: 0,
+        openPullRequests: 0,
+        quality: 76,
+        popularity: 97,
+        maintenance: 100
+      }
+    ];
+    const deck2 = [
+      {
+        name: "babel-cli",
+        version: "6.24.1",
+        releases: 63,
+        dependencies: 15,
+        dependents: 1726,
+        downloadsLastMonth: 1988789,
+        openIssues: 294,
+        openPullRequests: 109,
+        quality: 87,
+        popularity: 75,
+        maintenance: 99
+      }
+    ];
     describe("should return right values", () => {
       describe("when player is quessing", () => {
         it("and player is right", () => {
-          const deck1 = [
-            {
-              name: "lodash",
-              version: "4.17.4",
-              releases: 100,
-              dependencies: 0,
-              dependents: 46210,
-              downloadsLastMonth: 44562576,
-              openIssues: 0,
-              openPullRequests: 0,
-              quality: 76,
-              popularity: 97,
-              maintenance: 100
-            }
-          ];
-          const deck2 = [
-            {
-              name: "babel-cli",
-              version: "6.24.1",
-              releases: 63,
-              dependencies: 15,
-              dependents: 1726,
-              downloadsLastMonth: 1988789,
-              openIssues: 294,
-              openPullRequests: 109,
-              quality: 87,
-              popularity: 75,
-              maintenance: 99
-            }
-          ];
           const element = dom.window.document.getElementById("quessList");
-          const values = [false, false, true, false, element.value];
+          const values = [
+            false,
+            false,
+            true,
+            false,
+            element.options[element.selectedIndex].value
+          ];
           const returnValues = quess(deck1, deck2, false, element);
           returnValues.should.deep.equal(values);
         });
+
         it("and player is wrong", () => {
-          const deck1 = [
-            {
-              name: "lodash",
-              version: "4.17.4",
-              releases: 2,
-              dependencies: 0,
-              dependents: 46210,
-              downloadsLastMonth: 44562576,
-              openIssues: 0,
-              openPullRequests: 0,
-              quality: 76,
-              popularity: 97,
-              maintenance: 100
-            }
-          ];
-          const deck2 = [
-            {
-              name: "babel-cli",
-              version: "6.24.1",
-              releases: 63,
-              dependencies: 15,
-              dependents: 1726,
-              downloadsLastMonth: 1988789,
-              openIssues: 294,
-              openPullRequests: 109,
-              quality: 87,
-              popularity: 75,
-              maintenance: 99
-            }
-          ];
           const element = dom.window.document.getElementById("quessList");
-          const values = [false, false, false, false, element.value];
+          const values = [
+            false,
+            false,
+            false,
+            false,
+            element.options[element.selectedIndex].value
+          ];
+          const returnValues = quess(deck2, deck1, false, element);
+          returnValues.should.deep.equal(values);
+        });
+
+        it("same values", () => {
+          deck2[0].releases = 100;
+          const element = dom.window.document.getElementById("quessList");
+          const values = [
+            false,
+            true,
+            false,
+            true,
+            element.options[element.selectedIndex].value
+          ];
           const returnValues = quess(deck1, deck2, false, element);
           returnValues.should.deep.equal(values);
         });
       });
+
+      it("when computer is quessing", () => {
+        deck2[0].releases = 10;
+        const values = [false, false, true, false, 0];
+        for (var i = 0; i <= 10; ++i) {
+          const element = dom.window.document.getElementById(
+            "opt" + Math.floor(Math.random() * 9)
+          );
+          const b = element.text.split(":", 1);
+          const playerRight = element.value != 1 &&
+            element.value != 4 &&
+            element.value != 5
+            ? deck1[0][b] > deck2[0][b]
+            : deck1[0][b] < deck2[0][b];
+          values[2] = playerRight;
+          values[4] = element.value;
+          const returnValues = quess(deck1, deck2, true, element);
+          returnValues.should.deep.equal(values);
+        }
+      });
     });
   });
 
-  describe("Cardify test", () => {
-    //var app = new App(dom.window.document.getElementById("root"));
-    // it("#startGame()", function(done) {
-    //   app.startGame(done);
-    // });
+  describe("#cardify()", () => {
+    const card = `\n    <h3>babel-cli@6.24.1</h3>\n    <select multiple size="9" class="form-control" id="quessList">\n    <option id="opt0" value="0" style=\'color: red; font-weight: bold;\' disabled selected>releases: 63</option><option id="opt1" value="1" style=\'color: blue;\' disabled >dependencies: 15</option><option id="opt2" value="2" style=\'color: red; font-weight: bold;\' disabled >dependents: 1726</option><option id="opt3" value="3" style=\'color: red; font-weight: bold;\' disabled >downloadsLastMonth: 1988789</option><option id="opt4" value="4" style=\'color: blue;\' disabled >openIssues: 294</option><option id="opt5" value="5" style=\'color: blue;\' disabled >openPullRequests: 109</option><option id="opt6" value="6" style=\'color: red; font-weight: bold;\' disabled >quality: 87</option><option id="opt7" value="7" style=\'color: red; font-weight: bold;\' disabled >popularity: 75</option><option id="opt8" value="8" style=\'color: red; font-weight: bold;\' disabled >maintenance: 99</option>\n    </select>\n  `;
+    const cardPart = `<h3>babel-cli@6.24.1</h3>`;
+    it("should return html", () => {
+      cardify("disabled", undefined, packages[0]).should.include(cardPart);
+    });
+  });
+
+  describe("#render()", () => {
+    it("should");
   });
 });

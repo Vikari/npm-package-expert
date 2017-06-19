@@ -99,8 +99,7 @@ class App {
       const [playerWon, sameValue, playerRight, playersTurn, selected] = quess(
         this.getDeck(1),
         this.getDeck(2),
-        false,
-        document.getElementById("quessList")
+        false
       );
       this.setCounter(this.getCounter() + 1);
       if (playerRight) this.setPlayerHW(this.getPlayerHW() + 1);
@@ -117,8 +116,7 @@ class App {
     const [playerWon, sameValue, playerRight, playersTurn, selected] = quess(
       this.getDeck(1),
       this.getDeck(2),
-      true,
-      document.getElementById("quessList")
+      true
     );
     this.setCounter(this.getCounter() + 1);
     if (playerRight) this.setPlayerHW(this.getPlayerHW() + 1);

@@ -4,7 +4,8 @@ export default (deck1, deck2, isAI, element) => {
   if (isAI) {
     let a, b;
     do {
-      a = document.getElementById("opt" + Math.floor(Math.random() * 9));
+      if (element) a = element;
+      else a = document.getElementById("opt" + Math.floor(Math.random() * 9));
       b = a.text.split(":", 1);
     } while (deck1[0][b] === deck2[0][b]);
     const playerRight = a.value != 1 && a.value != 4 && a.value != 5
@@ -12,7 +13,9 @@ export default (deck1, deck2, isAI, element) => {
       : deck1[0][b] < deck2[0][b];
     return [false, false, playerRight, false, a.value];
   } else {
-    const a = element;
+    let a;
+    if (element) a = element;
+    else a = document.getElementById("quessList");
     const b = a.options[a.selectedIndex].text.split(":", 1);
     const selected = a.options[a.selectedIndex].value;
     if (deck1[0][b] === deck2[0][b]) {
