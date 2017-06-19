@@ -1,9 +1,4 @@
 import "babel-polyfill";
-require("blanket")({
-  pattern: function(filename) {
-    return !/node_modules/.test(filename);
-  }
-});
 var chai = typeof require === "undefined" ? chai : require("chai");
 //var App = typeof require === "undefined" ? "" : require("../src/client/app");
 var packages = require("../api/top-packages");

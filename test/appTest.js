@@ -1,8 +1,3 @@
-require("blanket")({
-  pattern: function(filename) {
-    return !/node_modules/.test(filename);
-  }
-});
 var chai = typeof require === "undefined" ? chai : require("chai");
 var expect = typeof require === "undefined"
   ? chai.expect
