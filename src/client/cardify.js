@@ -1,11 +1,12 @@
 // "Cardifys" given array element
 export default (disabled, selected, { name, version, ...card }) => {
-  let i = -1;
-  const styles = [
-    "style='color: blue;'",
-    "style='color: red; font-weight: bold;'"
-  ];
-  return `
+  if (name && version && card) {
+    let i = -1;
+    const styles = [
+      "style='color: blue;'",
+      "style='color: red; font-weight: bold;'"
+    ];
+    return `
     <h3>${name}@${version}</h3>
     <select multiple size="9" class="form-control" id="quessList">
     ${Object.entries(card)
@@ -22,4 +23,5 @@ export default (disabled, selected, { name, version, ...card }) => {
       .join("")}
     </select>
   `;
+  } else return ``;
 };

@@ -51,18 +51,21 @@ class App {
     this.start = value;
   }
 
+  // Set deck 1 or 2 indicated by number parameter
   setDeck(deck, number) {
     number === 2 ? (this.deck2 = deck) : (this.deck1 = deck);
   }
 
+  // Get deck 1 or 2 indicated by number parameter
   getDeck(number) {
     return number === 2 ? this.deck2 : this.deck1;
   }
 
   // Draws whole root on every update
   update(won, same, right, turn, selected) {
-    if (document.getElementById("error"))
+    if (document.getElementById("error")) {
       document.getElementById("error").innerHTML = "";
+    }
     this.root.innerHTML = render(
       won,
       same,
@@ -78,9 +81,9 @@ class App {
   }
 
   // Starts new game by fetching "cards" from the server and splitting and
-  // shuffling them to two decks
+  // shuffling them into two decks
   startGame() {
-    fetch("http://localhost:3000/api/top-packages.json")
+    return fetch("http://localhost:3000/api/top-packages.json")
       .then(response => response.json())
       .then(file => {
         const decks = splitPackages(shuffle(file));
@@ -89,8 +92,11 @@ class App {
         this.setCounter(0);
         this.setWins(0);
         this.setStart(true);
-        this.update(false, undefined, false, true);
-      });
+        return this.update(false, undefined, false, true);
+      })
+      .catch(err => {
+        console.log(err);
+      }); // .catch(console.log.bind(console));
   }
 
   // Handles players quess and tells update what to do next
