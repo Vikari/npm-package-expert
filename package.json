@@ -8,8 +8,7 @@
     "bundle": "cross-env NODE_ENV=production webpack -p --progress",
     "dev": "npm run build && cross-env NODE_ENV=development webpack --progress --watch",
     "start": "node .",
-    "test": "mocha --require init.js --compilers js:babel-core/register -r jsdom-global/register",
-    "coverage": "istanbul cover _mocha -- --require init.js --compilers js:babel-core/register -r jsdom-global/register"
+    "test": "mocha --require init.js --compilers js:babel-core/register -r jsdom-global/register"
   },
   "private": true,
   "keywords": [],
@@ -43,8 +42,7 @@
     "url-loader": "^0.5.9",
     "webpack": "^2.6.1",
     "webpack-livereload-plugin": "^0.11.0",
-    "webpack-node-externals": "^1.6.0",
-    "window-or-global": "^1.0.1"
+    "webpack-node-externals": "^1.6.0"
   },
   "dependencies": {}
 }

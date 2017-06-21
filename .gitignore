@@ -1,9 +1,17 @@
+# dependencies
 /node_modules/
+
+# production
 /lib/
-/.tmp/mocha-webpack/
-/test.js
-/mochatest.html
-/chai.js
-/coverage.html
-/npm-debug.log
+
+# testing
 /coverage/
+/.tmp/mocha-webpack/
+webpack.config-test.js
+test.js
+mochatest.html
+chai.js
+coverage.html
+
+#misc
+npm-debug.log
