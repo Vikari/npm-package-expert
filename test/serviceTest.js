@@ -3,6 +3,7 @@ import "babel-polyfill";
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
 import sinon from "sinon";
+import "whatwg-fetch";
 //var App = typeof require === "undefined" ? "" : require("../src/client/app");
 import packages from "../api/top-packages";
 import splitPackages from "../src/client/splitPackages";
@@ -10,7 +11,6 @@ import quess from "../src/client/quess";
 import render from "../src/client/render";
 import shiftCards from "../src/client/shiftCards";
 import cardify from "../src/client/cardify";
-import "whatwg-fetch";
 
 chai.use(chaiAsPromised);
 chai.should();
@@ -40,11 +40,11 @@ describe("Services", () => {
   });
 
   describe("#shiftCards()", () => {
-    const deck1 = packages.slice(0, packages.length / 2);
-    const deck2 = [];
-    const expected = [deck1, deck2];
-
     it("should return unchanged if one or both empty", () => {
+      const deck1 = packages.slice(0, packages.length / 2);
+      const deck2 = [];
+      const expected = [deck1, deck2];
+
       shiftCards(deck1, deck2).should.deep.equal(expected);
       shiftCards(deck1).should.deep.equal([deck1, undefined]);
     });
@@ -53,21 +53,23 @@ describe("Services", () => {
       it("when player wins", () => {
         const deck1 = packages.slice(0, packages.length / 2);
         const deck2 = packages.slice(packages.length / 2);
-        const [tdeck1, tdeck2] = shiftCards(deck1, deck2, true);
-        tdeck1.length.should.equal(deck1.length + 1);
-        tdeck2.length.should.equal(deck2.length - 1);
-        tdeck1[tdeck1.length - 2].should.equal(deck1[0]);
-        tdeck1[tdeck1.length - 1].should.equal(deck2[0]);
+        const [rdeck1, rdeck2] = shiftCards(deck1, deck2, true);
+
+        rdeck1.length.should.equal(deck1.length + 1);
+        rdeck2.length.should.equal(deck2.length - 1);
+        rdeck1[rdeck1.length - 2].should.equal(deck1[0]);
+        rdeck1[rdeck1.length - 1].should.equal(deck2[0]);
       });
 
       it("when player loses", () => {
         const deck1 = packages.slice(0, packages.length / 2);
         const deck2 = packages.slice(packages.length / 2);
-        const [tdeck1, tdeck2] = shiftCards(deck1, deck2, false);
-        tdeck1.length.should.equal(deck1.length - 1);
-        tdeck2.length.should.equal(deck2.length + 1);
-        tdeck2[tdeck2.length - 2].should.equal(deck1[0]);
-        tdeck2[tdeck2.length - 1].should.equal(deck2[0]);
+        const [rdeck1, rdeck2] = shiftCards(deck1, deck2, false);
+
+        rdeck1.length.should.equal(deck1.length - 1);
+        rdeck2.length.should.equal(deck2.length + 1);
+        rdeck2[rdeck2.length - 2].should.equal(deck1[0]);
+        rdeck2[rdeck2.length - 1].should.equal(deck2[0]);
       });
     });
   });
