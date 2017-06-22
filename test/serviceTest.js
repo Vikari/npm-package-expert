@@ -2,6 +2,7 @@ import "babel-polyfill";
 //var chai = typeof require === "undefined" ? chai : require("chai");
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
 //var App = typeof require === "undefined" ? "" : require("../src/client/app");
 import packages from "../api/top-packages";
 import splitPackages from "../src/client/splitPackages";
@@ -9,6 +10,7 @@ import quess from "../src/client/quess";
 import render from "../src/client/render";
 import shiftCards from "../src/client/shiftCards";
 import cardify from "../src/client/cardify";
+import "whatwg-fetch";
 
 chai.use(chaiAsPromised);
 chai.should();
@@ -202,15 +204,34 @@ describe("Services", () => {
   describe("/api/top-packages.json", () => {
     let cards;
 
-    it("should be an array", () => {
-      return fetch("http://localhost:3000/api/top-packages.json")
+    beforeEach(() => {
+      sinon.stub(window, "fetch");
+      var res = new window.Response(JSON.stringify(packages), {
+        status: 200,
+        headers: {
+          "Content-type": "application/json"
+        }
+      });
+
+      window.fetch.returns(Promise.resolve(res));
+    });
+
+    afterEach(() => {
+      window.fetch.restore();
+    });
+
+    it("should be an array", done => {
+      window
+        .fetch("/api/top-packages.json")
         .then(response => response.json())
         .then(file => {
           cards = file;
+          cards.should.deep.equal(packages);
           return file;
         })
         .catch(console.log.bind(console))
-        .should.eventually.be.a("array");
+        .should.eventually.be.a("array")
+        .notify(done);
     });
 
     it("should contain objects", () => {
