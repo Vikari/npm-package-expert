@@ -3,6 +3,7 @@
 
 # production
 /lib/
+bundle.js
 
 # testing
 /coverage/

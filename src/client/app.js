@@ -17,7 +17,7 @@ class App {
     this.wins = 0;
     this.start = false;
     this.values;
-    this.difficulty;
+    this.difficulty = 1;
     this.update();
   }
 
@@ -96,8 +96,10 @@ class App {
         this.setCounter(0);
         this.setWins(0);
         this.setStart(true);
-        const a = document.getElementById("difficultyList");
-        this.difficulty = a.options[a.selectedIndex].value;
+        if (document.getElementById("difficultyList")) {
+          const a = document.getElementById("difficultyList");
+          this.difficulty = a.options[a.selectedIndex].value;
+        }
         return this.update(false, undefined, false, true);
       })
       .catch(err => {

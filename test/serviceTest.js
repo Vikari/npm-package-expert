@@ -2,6 +2,8 @@ import "babel-polyfill";
 //var chai = typeof require === "undefined" ? chai : require("chai");
 import chai from "chai";
 import chaiAsPromised from "chai-as-promised";
+import sinon from "sinon";
+import "whatwg-fetch";
 //var App = typeof require === "undefined" ? "" : require("../src/client/app");
 import packages from "../api/top-packages";
 import splitPackages from "../src/client/splitPackages";
@@ -9,6 +11,7 @@ import quess from "../src/client/quess";
 import render from "../src/client/render";
 import shiftCards from "../src/client/shiftCards";
 import cardify from "../src/client/cardify";
+import packageValues from "../src/client/packageValues";
 
 chai.use(chaiAsPromised);
 chai.should();
@@ -38,11 +41,11 @@ describe("Services", () => {
   });
 
   describe("#shiftCards()", () => {
-    const deck1 = packages.slice(0, packages.length / 2);
-    const deck2 = [];
-    const expected = [deck1, deck2];
-
     it("should return unchanged if one or both empty", () => {
+      const deck1 = packages.slice(0, packages.length / 2);
+      const deck2 = [];
+      const expected = [deck1, deck2];
+
       shiftCards(deck1, deck2).should.deep.equal(expected);
       shiftCards(deck1).should.deep.equal([deck1, undefined]);
     });
@@ -51,21 +54,23 @@ describe("Services", () => {
       it("when player wins", () => {
         const deck1 = packages.slice(0, packages.length / 2);
         const deck2 = packages.slice(packages.length / 2);
-        const [tdeck1, tdeck2] = shiftCards(deck1, deck2, true);
-        tdeck1.length.should.equal(deck1.length + 1);
-        tdeck2.length.should.equal(deck2.length - 1);
-        tdeck1[tdeck1.length - 2].should.equal(deck1[0]);
-        tdeck1[tdeck1.length - 1].should.equal(deck2[0]);
+        const [rdeck1, rdeck2] = shiftCards(deck1, deck2, true);
+
+        rdeck1.length.should.equal(deck1.length + 1);
+        rdeck2.length.should.equal(deck2.length - 1);
+        rdeck1[rdeck1.length - 2].should.equal(deck1[0]);
+        rdeck1[rdeck1.length - 1].should.equal(deck2[0]);
       });
 
       it("when player loses", () => {
         const deck1 = packages.slice(0, packages.length / 2);
         const deck2 = packages.slice(packages.length / 2);
-        const [tdeck1, tdeck2] = shiftCards(deck1, deck2, false);
-        tdeck1.length.should.equal(deck1.length - 1);
-        tdeck2.length.should.equal(deck2.length + 1);
-        tdeck2[tdeck2.length - 2].should.equal(deck1[0]);
-        tdeck2[tdeck2.length - 1].should.equal(deck2[0]);
+        const [rdeck1, rdeck2] = shiftCards(deck1, deck2, false);
+
+        rdeck1.length.should.equal(deck1.length - 1);
+        rdeck2.length.should.equal(deck2.length + 1);
+        rdeck2[rdeck2.length - 2].should.equal(deck1[0]);
+        rdeck2[rdeck2.length - 1].should.equal(deck2[0]);
       });
     });
   });
@@ -114,7 +119,7 @@ describe("Services", () => {
             element.options[element.selectedIndex].value
           ];
 
-          const res = quess(deck1, deck2, false, element);
+          const res = quess(deck1, deck2, false, undefined, undefined, element);
           res.should.deep.equal(expected);
         });
 
@@ -128,7 +133,7 @@ describe("Services", () => {
             element.options[element.selectedIndex].value
           ];
 
-          const res = quess(deck2, deck1, false, element);
+          const res = quess(deck2, deck1, false, undefined, undefined, element);
           res.should.deep.equal(expected);
         });
 
@@ -143,12 +148,13 @@ describe("Services", () => {
             element.options[element.selectedIndex].value
           ];
 
-          const res = quess(deck1, deck2, false, element);
+          const res = quess(deck1, deck2, false, undefined, undefined, element);
           res.should.deep.equal(expected);
         });
       });
 
       it("when computer is quessing", () => {
+        const values = packageValues(packages);
         deck2[0].releases = 10;
         const expected = [false, false, true, false, 0];
 
@@ -158,13 +164,14 @@ describe("Services", () => {
           );
           const b = element.text.split(":", 1);
           const c = element.value;
-          const right = c != 1 && c != 4 && c != 5
-            ? deck1[0][b] > deck2[0][b]
-            : deck1[0][b] < deck2[0][b];
+          const right =
+            c != 1 && c != 4 && c != 5
+              ? deck1[0][b] > deck2[0][b]
+              : deck1[0][b] < deck2[0][b];
           expected[2] = right;
           expected[4] = c;
 
-          const res = quess(deck1, deck2, true, element);
+          const res = quess(deck1, deck2, true, values, 0.5, element);
           res.should.deep.equal(expected);
         }
       });
@@ -193,7 +200,7 @@ describe("Services", () => {
         packages.slice(0, packages.length / 2),
         packages.slice(packages.length / 2)
       ];
-      const expected = `\n    <h1>Player Lost the round!</h1>\n    \n  <table class=\'table table-striped table-bordered table-inverse\'><td> Round/wins:\n  1/1\n  </td><td>Players cards:\n  5\n  </td><td>Computers cards:\n  7\n  </td>\n    <table class="table table-striped table-bordered table-inverse">\n    <td>\n    <b>Players card</b>: </th>\n    <h3>babel-cli@6.24.1</h3>\n    <select multiple size="9" class="form-control" id="quessList">\n    <option id="opt0" value="0" style=\'color: red; font-weight: bold;\' disabled selected>releases: 63</option><option id="opt1" value="1" style=\'color: blue;\' disabled >dependencies: 15</option><option id="opt2" value="2" style=\'color: red; font-weight: bold;\' disabled >dependents: 1726</option><option id="opt3" value="3" style=\'color: red; font-weight: bold;\' disabled >downloadsLastMonth: 1988789</option><option id="opt4" value="4" style=\'color: blue;\' disabled >openIssues: 294</option><option id="opt5" value="5" style=\'color: blue;\' disabled >openPullRequests: 109</option><option id="opt6" value="6" style=\'color: red; font-weight: bold;\' disabled >quality: 87</option><option id="opt7" value="7" style=\'color: red; font-weight: bold;\' disabled >popularity: 75</option><option id="opt8" value="8" style=\'color: red; font-weight: bold;\' disabled >maintenance: 99</option>\n    </select>\n  \n    </td>\n    <td>\n    <b>Computers card</b>: </th>\n    <h3>yargs@8.0.1</h3>\n    <select multiple size="9" class="form-control" id="quessList">\n    <option id="opt0" value="0" style=\'color: red; font-weight: bold;\' disabled selected>releases: 138</option><option id="opt1" value="1" style=\'color: blue;\' disabled >dependencies: 13</option><option id="opt2" value="2" style=\'color: red; font-weight: bold;\' disabled >dependents: 5849</option><option id="opt3" value="3" style=\'color: red; font-weight: bold;\' disabled >downloadsLastMonth: 28522602</option><option id="opt4" value="4" style=\'color: blue;\' disabled >openIssues: 108</option><option id="opt5" value="5" style=\'color: blue;\' disabled >openPullRequests: 3</option><option id="opt6" value="6" style=\'color: red; font-weight: bold;\' disabled >quality: 100</option><option id="opt7" value="7" style=\'color: red; font-weight: bold;\' disabled >popularity: 86</option><option id="opt8" value="8" style=\'color: red; font-weight: bold;\' disabled >maintenance: 99</option>\n    </select>\n  \n    </td>\n    </table>\n    <button class="btn btn-primary" onClick="app.shiftCards(false)">Continue</button>\n    <button class="btn btn-danger" onClick="app.startGame()">Start over</button>\n    `;
+      const expected = `\n    <h1>Player Lost the round!</h1>\n    \n  <table class=\'table table-striped table-bordered table-inverse\'><td> Round/wins:\n  1/1\n  </td><td>Players cards:\n  5\n  </td><td>Computers cards:\n  7\n  </td>\n    <table class="table table-striped table-bordered table-inverse">\n    <td>\n    <b>Players card</b>: </th>\n    <h3>babel-cli@6.24.1</h3>\n    <select multiple size="9" class="form-control" id="quessList">\n    <option id="opt0" value="0" style=\'color: red; font-weight: bold;\' disabled selected>releases: 63</option><option id="opt1" value="1" style=\'color: blue;\' disabled >dependencies: 15</option><option id="opt2" value="2" style=\'color: red; font-weight: bold;\' disabled >dependents: 1726</option><option id="opt3" value="3" style=\'color: red; font-weight: bold;\' disabled >downloadsLastMonth: 1988789</option><option id="opt4" value="4" style=\'color: blue;\' disabled >openIssues: 294</option><option id="opt5" value="5" style=\'color: blue;\' disabled >openPullRequests: 109</option><option id="opt6" value="6" style=\'color: red; font-weight: bold;\' disabled >quality: 87</option><option id="opt7" value="7" style=\'color: red; font-weight: bold;\' disabled >popularity: 75</option><option id="opt8" value="8" style=\'color: red; font-weight: bold;\' disabled >maintenance: 99</option>\n    </select>\n  \n    </td>\n    <td>\n    <b>Computers card</b>: </th>\n    <h3>yargs@8.0.1</h3>\n    <select multiple size="9" class="form-control" id="quessList">\n    <option id="opt0" value="0" style=\'color: red; font-weight: bold;\' disabled selected>releases: 138</option><option id="opt1" value="1" style=\'color: blue;\' disabled >dependencies: 13</option><option id="opt2" value="2" style=\'color: red; font-weight: bold;\' disabled >dependents: 5849</option><option id="opt3" value="3" style=\'color: red; font-weight: bold;\' disabled >downloadsLastMonth: 28522602</option><option id="opt4" value="4" style=\'color: blue;\' disabled >openIssues: 108</option><option id="opt5" value="5" style=\'color: blue;\' disabled >openPullRequests: 3</option><option id="opt6" value="6" style=\'color: red; font-weight: bold;\' disabled >quality: 100</option><option id="opt7" value="7" style=\'color: red; font-weight: bold;\' disabled >popularity: 86</option><option id="opt8" value="8" style=\'color: red; font-weight: bold;\' disabled >maintenance: 99</option>\n    </select>\n  \n    </td>\n    </table>\n    <button class="btn btn-primary" onClick="app.shiftCards(false)">Continue</button>\n    <button class="btn btn-danger" onClick="app.startOver()">Start over</button>\n    `;
 
       render(...args).should.equal(expected);
     });
@@ -202,15 +209,34 @@ describe("Services", () => {
   describe("/api/top-packages.json", () => {
     let cards;
 
-    it("should be an array", () => {
-      return fetch("http://localhost:3000/api/top-packages.json")
+    beforeEach(() => {
+      sinon.stub(window, "fetch");
+      var res = new window.Response(JSON.stringify(packages), {
+        status: 200,
+        headers: {
+          "Content-type": "application/json"
+        }
+      });
+
+      window.fetch.returns(Promise.resolve(res));
+    });
+
+    afterEach(() => {
+      window.fetch.restore();
+    });
+
+    it("should be an array", done => {
+      window
+        .fetch("/api/top-packages.json")
         .then(response => response.json())
         .then(file => {
           cards = file;
+          cards.should.deep.equal(packages);
           return file;
         })
         .catch(console.log.bind(console))
-        .should.eventually.be.a("array");
+        .should.eventually.be.a("array")
+        .notify(done);
     });
 
     it("should contain objects", () => {
