@@ -1,4 +1,5 @@
 import cardify from "./cardify";
+import { Config } from "./config";
 
 const button = (onClick, children, type) =>
   `<button class="btn btn-${type}" onClick="${onClick}">${children}</button>`;
@@ -17,6 +18,13 @@ const infoTable = (counter, wins, deck1, deck2) => `
   </td><td>Computers cards:
   ${deck2}
   </td>`;
+
+const difficulty = () => `<h3>Difficulty</h3>
+<select multiple size="3" class="form-control" id="difficultyList">
+  <option id="easy" value="${Config["DIFF_EASY"]}" selected>Easy</option>
+  <option id="medium" value="${Config["DIFF_MEDIUM"]}">medium</option>
+  <option id="hard" value="${Config["DIFF_HARD"]}">Hard</option>
+</select>`;
 
 // Handles drawing web page by using given values
 export default (
@@ -47,6 +55,7 @@ export default (
         "style='color:blue;'"
       )}
     ${button("app.startGame()", "Start New Game", "primary")}
+    ${difficulty()}
   `;
   } else {
     return `
@@ -84,7 +93,7 @@ export default (
       : same
         ? button("app.quess()", "P Quess", "primary")
         : button("app.shiftCards(" + right + ")", "Continue", "primary")}
-    ${button("app.startGame()", "Start over", "danger")}
+    ${button("app.startOver()", "Start over", "danger")}
     `;
   }
 };

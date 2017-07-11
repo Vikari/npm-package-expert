@@ -5,6 +5,7 @@ import splitPackages from "./splitPackages";
 import quess from "./quess";
 import render from "./render";
 import shiftCards from "./shiftCards";
+import packageValues from "./packageValues";
 /* ... */
 
 class App {
@@ -15,6 +16,8 @@ class App {
     this.counter = 0;
     this.wins = 0;
     this.start = false;
+    this.values;
+    this.difficulty;
     this.update();
   }
 
@@ -89,9 +92,12 @@ class App {
         const decks = splitPackages(shuffle(file));
         this.setDeck(decks[0], 1);
         this.setDeck(decks[1], 2);
+        this.values = packageValues(file);
         this.setCounter(0);
         this.setWins(0);
         this.setStart(true);
+        const a = document.getElementById("difficultyList");
+        this.difficulty = a.options[a.selectedIndex].value;
         return this.update(false, undefined, false, true);
       })
       .catch(err => {
@@ -122,7 +128,9 @@ class App {
     const [won, same, right, turn, selected] = quess(
       this.getDeck(1),
       this.getDeck(2),
-      true
+      true,
+      this.values,
+      this.difficulty
     );
     this.setCounter(this.getCounter() + 1);
     if (right) this.setWins(this.getWins() + 1);
@@ -146,6 +154,12 @@ class App {
   gameEnded() {
     this.setStart(false);
     this.update(this.deck2.length < 1);
+  }
+
+  startOver() {
+    this.setStart(false);
+    this.setCounter(0);
+    this.update();
   }
 }
 
